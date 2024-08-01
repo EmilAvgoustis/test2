@@ -1,0 +1,83 @@
+class equilateralTriangle extends HTMLElement
+{
+    #template;
+    #root;
+    #side_length;
+
+    static get observedAttributes()
+    {
+        return ["side_length", "border_color", "area_color", "add"];
+    }
+
+    constructor()
+    {
+        super();
+
+        this.#template = document.createElement("template");
+
+        this.#template.innerHTML = 
+        `
+          <style>
+            
+            .container
+            {
+              display: flex;
+              align-items: flex-start;
+              justify-content: center;
+            }
+
+            
+
+          </style>
+
+          <div class="container">
+
+          </div>
+        `;
+
+        this.#root = this.attachShadow({mode: "open"});
+        this.#root.appendChild(this.#template.content.cloneNode(true));
+
+        /* Add Css */
+
+        this.#side_length = parseFloat(this.getAttribute("side_length").slice(0, this.getAttribute("side_length").length - 2)); 
+
+        Object.assign(this.#root.querySelector(".container").style, 
+          {
+            width: "0px",
+            height: "0px",
+            borderLeft: `${this.#side_length / 2}px solid transparent`,
+            borderRight: `${this.#side_length / 2}px solid transparent`,
+            borderBottom: `${(this.#side_length / 2) * 1.732}px solid ${this.getAttribute("border_color")}`,
+            paddingTop: `${this.#side_length / 60}px`
+          }
+        );
+
+        if(this.getAttribute("add") === "true")
+        {
+            this.#root.querySelector(".container").innerHTML =
+            `
+              <equilateral-triangle
+                side_length = "${this.#side_length * 0.97}px"
+                border_color = ${this.getAttribute("area_color")}
+                add="false"
+              >
+              </equilateral-triangle>
+
+            `;
+        }    
+    }    
+}
+
+customElements.define("equilateral-triangle", equilateralTriangle);
+
+/* 
+  All attributes must NESESSARY to be specified in the below format:  
+  
+  Example:
+
+    side_length = "20px"
+    border_color = "black"
+    area_color = "red"
+    add="false"
+*/
